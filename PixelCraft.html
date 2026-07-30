@@ -3,123 +3,27 @@
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PixelCraft — создаём миры</title>
+    <title>PixelCraft — Музыка и миры</title>
     <style>
-      body {
-        font-family: Arial, sans-serif;
-        margin: 0;
-        padding: 0;
-        background-color: #f4f6f8;
-        color: #333;
-      }
-      header {
-        background-color: #2c3e50;
-        color: white;
-        padding: 20px 0;
-        text-align: center;
-      }
-      header h1 {
-        margin: 0;
-        font-size: 28px;
-      }
-      nav {
-        text-align: center;
-        margin-top: 10px;
-      }
-      nav a {
-        color: white;
-        text-decoration: none;
-        margin: 0 12px;
-        font-weight: bold;
-        cursor: pointer;
-        padding: 8px 12px;
-        border-radius: 4px;
-      }
-      nav a.active, nav a:hover {
-        background-color: #3498db;
-        color: white;
-      }
-      .container {
-        max-width: 960px;
-        margin: 30px auto;
-        padding: 0 20px;
-      }
-      .page-section {
-        display: none;
-      }
-      .page-section.active {
-        display: block;
-        animation: fadeIn 0.3s ease-out;
-      }
-      @keyframes fadeIn {
-        from { opacity: 0; transform: translateY(5px); }
-        to { opacity: 1; transform: translateY(0); }
-      }
-      .hero {
-        background: white;
-        padding: 30px;
-        border-radius: 8px;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        text-align: center;
-      }
-      .btn {
-        display: inline-block;
-        background-color: #3498db;
-        color: white;
-        padding: 12px 24px;
-        text-decoration: none;
-        border-radius: 6px;
-        font-weight: bold;
-        cursor: pointer;
-        border: none;
-        font-size: 16px;
-      }
-      .features {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 20px;
-        justify-content: center;
-        margin-top: 30px;
-      }
-      .feature-card {
-        background: white;
-        width: 260px;
-        padding: 15px;
-        border-radius: 8px;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.08);
-        text-align: center;
-      }
-      footer {
-        background-color: #2c3e50;
-        color: #bdc3c7;
-        text-align: center;
-        padding: 20px 0;
-        margin-top: 50px;
-      }
-      .music-player {
-        background: #fff;
-        padding: 20px;
-        border-radius: 8px;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.08);
-        max-width: 500px;
-        margin: 20px auto;
-      }
-      audio {
-        width: 100%;
-        margin-top: 10px;
-      }
-      .custom-upload {
-        display: inline-block;
-        background-color: #27ae60;
-        color: white;
-        padding: 10px 20px;
-        border-radius: 6px;
-        cursor: pointer;
-        font-weight: bold;
-      }
-      .custom-upload:hover {
-        background-color: #2ecc71;
-      }
+      body { font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #f4f6f8; color: #333; }
+      header { background-color: #2c3e50; color: white; padding: 20px 0; text-align: center; }
+      header h1 { margin: 0; font-size: 28px; }
+      nav { text-align: center; margin-top: 10px; }
+      nav a { color: white; text-decoration: none; margin: 0 12px; font-weight: bold; cursor: pointer; padding: 8px 12px; border-radius: 4px; }
+      nav a.active, nav a:hover { background-color: #3498db; color: white; }
+      .container { max-width: 960px; margin: 30px auto; padding: 0 20px; }
+      .page-section { display: none; }
+      .page-section.active { display: block; animation: fadeIn 0.3s ease-out; }
+      @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+      .hero { background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); text-align: center; }
+      .btn { display: inline-block; background-color: #3498db; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold; cursor: pointer; border: none; font-size: 16px; }
+      .features { display: flex; flex-wrap: wrap; gap: 20px; justify-content: center; margin-top: 30px; }
+      .feature-card { background: white; width: 260px; padding: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.08); text-align: center; }
+      footer { background-color: #2c3e50; color: #bdc3c7; text-align: center; padding: 20px 0; margin-top: 50px; }
+      .music-player { background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.08); max-width: 500px; margin: 20px auto; }
+      audio { width: 100%; margin-top: 10px; }
+      .custom-upload { display: inline-block; background-color: #27ae60; color: white; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: bold; }
+      .custom-upload:hover { background-color: #2ecc71; }
     </style>
   </head>
   <body>
@@ -144,7 +48,6 @@
           <button class="btn" id="orderBtn">Заказать проект</button>
           <p id="resultMessage" style="margin-top:15px; font-weight:bold; display:none;"></p>
         </div>
-
         <section class="features">
           <div class="feature-card">
             <h3>🧱 Minecraft-карты</h3>
@@ -155,7 +58,6 @@
             <p>Уровни любой сложности, красивые эффекты и монеты, которые реально можно собрать.</p>
           </div>
         </section>
-
         <p style="text-align:center; margin-top:30px; font-size:18px;">
           Также вы можете послушать музыку в разделе «Музыка».
         </p>
@@ -166,7 +68,7 @@
         <div class="hero" style="text-align:left;">
           <h2>О нас</h2>
           <p>Мы — команда PixelCraft. Мы любим Minecraft, Geometry Dash и вообще всё, что можно построить или собрать из блоков. Наша фишка — делать вещи, которые не просто работают, а ещё и прикольно выглядят.</p>
-          <p>Мы сами когда‑то начинали с простых HTML‑страничек и батник‑скриптов, поэтому точно знаем, как бывает сложно, когда ничего не получается. И хотим помогать, чтобы получалось.</p>
+          <p>Когда-то мы сами начинали с простых HTML‑страничек и батник‑скриптов, поэтому точно знаем, как бывает сложно, когда ничего не получается. И хотим помогать, чтобы получалось.</p>
         </div>
       </section>
 
@@ -185,7 +87,7 @@
       <section id="music" class="page-section">
         <div class="hero" style="text-align:left;">
           <h2>Музыка</h2>
-          <p>Здесь можно послушать готовые треки или загрузить свой файл с диска (MP3, WAV и другие форматы, которые поддерживает браузер).</p>
+          <p>Здесь можно послушать готовые треки или загрузить свой файл с диска (MP3, WAV и другие форматы).</p>
         </div>
 
         <!-- Свой файл -->
@@ -195,23 +97,30 @@
             <input type="file" accept="audio/*" id="localFileInput" style="display:none;" onchange="loadLocalAudio(this)">
           </label>
           <p id="selectedFileName" style="margin:10px 0 0; color:#555;"></p>
-
           <audio id="localAudio" controls style="display:none;"></audio>
         </div>
 
         <!-- Готовые треки -->
         <div class="music-player">
-          <h3>C418 — Sweden</h3>
+          <h3>🎵 Треки для вдохновения</h3>
+          <hr style="border:0; border-top:1px solid #eee; margin:10px 0;">
+          
+          <h4>C418 — Sweden</h4>
           <audio controls>
             <source src="https://dmistrewaq.github.io/Assets/C418_-_Sweden_30921677.mp3" type="audio/mpeg">
             Ваш браузер не поддерживает аудио.
           </audio>
-        </div>
 
-        <div class="music-player">
-          <h3>Lena Raine — Creator</h3>
+          <h4>Lena Raine — Creator</h4>
           <audio controls>
             <source src="https://dmistrewaq.github.io/Assets/Lena_Raine_-_Creator_77918548.mp3" type="audio/mpeg">
+            Ваш браузер не поддерживает аудио.
+          </audio>
+
+          <!-- Новый трек: Aria Math -->
+          <h4>C418 — Aria Math</h4>
+          <audio controls>
+            <source src="https://dmistrewaq.github.io/Assets/ariamath.mp3" type="audio/mpeg">
             Ваш браузер не поддерживает аудио.
           </audio>
         </div>
@@ -252,10 +161,7 @@
         const audioElem = document.getElementById('localAudio');
         const fileNameElem = document.getElementById('selectedFileName');
 
-        // Показываем имя файла
         fileNameElem.textContent = 'Выбран файл: ' + file.name;
-
-        // Создаём ссылку на локальный файл
         const fileURL = URL.createObjectURL(file);
         audioElem.src = fileURL;
         audioElem.style.display = 'block';
