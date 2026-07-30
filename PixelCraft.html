@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PixelCraft — создаём миры</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #f4f6f8;
+        color: #333;
+      }
+      header {
+        background-color: #2c3e50;
+        color: white;
+        padding: 20px 0;
+        text-align: center;
+      }
+      header h1 {
+        margin: 0;
+        font-size: 28px;
+      }
+      nav {
+        text-align: center;
+        margin-top: 10px;
+      }
+      nav a {
+        color: white;
+        text-decoration: none;
+        margin: 0 12px;
+        font-weight: bold;
+        cursor: pointer;
+        padding: 8px 12px;
+        border-radius: 4px;
+      }
+      nav a.active, nav a:hover {
+        background-color: #3498db;
+        color: white;
+      }
+      .container {
+        max-width: 960px;
+        margin: 30px auto;
+        padding: 0 20px;
+      }
+      .page-section {
+        display: none;
+      }
+      .page-section.active {
+        display: block;
+        animation: fadeIn 0.3s ease-out;
+      }
+      @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(5px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+      .hero {
+        background: white;
+        padding: 30px;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        text-align: center;
+      }
+      .btn {
+        display: inline-block;
+        background-color: #3498db;
+        color: white;
+        padding: 12px 24px;
+        text-decoration: none;
+        border-radius: 6px;
+        font-weight: bold;
+        cursor: pointer;
+        border: none;
+        font-size: 16px;
+      }
+      .features {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+        justify-content: center;
+        margin-top: 30px;
+      }
+      .feature-card {
+        background: white;
+        width: 260px;
+        padding: 15px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+        text-align: center;
+      }
+      footer {
+        background-color: #2c3e50;
+        color: #bdc3c7;
+        text-align: center;
+        padding: 20px 0;
+        margin-top: 50px;
+      }
+      .music-player {
+        background: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+        max-width: 500px;
+        margin: 20px auto;
+      }
+      audio {
+        width: 100%;
+        margin-top: 10px;
+      }
+      .custom-upload {
+        display: inline-block;
+        background-color: #27ae60;
+        color: white;
+        padding: 10px 20px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-weight: bold;
+      }
+      .custom-upload:hover {
+        background-color: #2ecc71;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>PixelCraft</h1>
+      <nav>
+        <a onclick="showPage('home')" id="btn-home" class="active">Главная</a>
+        <a onclick="showPage('about')" id="btn-about">О нас</a>
+        <a onclick="showPage('services')" id="btn-services">Услуги</a>
+        <a onclick="showPage('music')" id="btn-music">Музыка</a>
+        <a onclick="showPage('contacts')" id="btn-contacts">Контакты</a>
+      </nav>
+    </header>
+
+    <div class="container">
+      <!-- ГЛАВНАЯ -->
+      <section id="home" class="page-section active">
+        <div class="hero">
+          <h2>Создаём миры, которые запоминаются</h2>
+          <p>Мы делаем крутые карты для Minecraft, уровни для Geometry Dash и помогаем с HTML.</p>
+          <br>
+          <button class="btn" id="orderBtn">Заказать проект</button>
+          <p id="resultMessage" style="margin-top:15px; font-weight:bold; display:none;"></p>
+        </div>
+
+        <section class="features">
+          <div class="feature-card">
+            <h3>🧱 Minecraft-карты</h3>
+            <p>Паркур, TNT Run, мини‑игры и целые миры. Строим так, чтобы было интересно играть снова и снова.</p>
+          </div>
+          <div class="feature-card">
+            <h3>⚡ Geometry Dash</h3>
+            <p>Уровни любой сложности, красивые эффекты и монеты, которые реально можно собрать.</p>
+          </div>
+        </section>
+
+        <p style="text-align:center; margin-top:30px; font-size:18px;">
+          Также вы можете послушать музыку в разделе «Музыка».
+        </p>
+      </section>
+
+      <!-- О НАС -->
+      <section id="about" class="page-section">
+        <div class="hero" style="text-align:left;">
+          <h2>О нас</h2>
+          <p>Мы — команда PixelCraft. Мы любим Minecraft, Geometry Dash и вообще всё, что можно построить или собрать из блоков. Наша фишка — делать вещи, которые не просто работают, а ещё и прикольно выглядят.</p>
+          <p>Мы сами когда‑то начинали с простых HTML‑страничек и батник‑скриптов, поэтому точно знаем, как бывает сложно, когда ничего не получается. И хотим помогать, чтобы получалось.</p>
+        </div>
+      </section>
+
+      <!-- УСЛУГИ -->
+      <section id="services" class="page-section">
+        <div class="hero" style="text-align:left;">
+          <h2>Наши услуги</h2>
+          <ul>
+            <li>🧱 Делаем карты для Minecraft: паркур, TNT Run, мини‑игры.</li>
+            <li>⚡ Создаём уровни для Geometry Dash: красивые, с эффектами и монетами.</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- МУЗЫКА -->
+      <section id="music" class="page-section">
+        <div class="hero" style="text-align:left;">
+          <h2>Музыка</h2>
+          <p>Здесь можно послушать готовые треки или загрузить свой файл с диска (MP3, WAV и другие форматы, которые поддерживает браузер).</p>
+        </div>
+
+        <!-- Свой файл -->
+        <div class="music-player">
+          <label class="custom-upload">
+            📁 Выбрать свой трек
+            <input type="file" accept="audio/*" id="localFileInput" style="display:none;" onchange="loadLocalAudio(this)">
+          </label>
+          <p id="selectedFileName" style="margin:10px 0 0; color:#555;"></p>
+
+          <audio id="localAudio" controls style="display:none;"></audio>
+        </div>
+
+        <!-- Готовые треки -->
+        <div class="music-player">
+          <h3>C418 — Sweden</h3>
+          <audio controls>
+            <source src="https://dmistrewaq.github.io/Assets/C418_-_Sweden_30921677.mp3" type="audio/mpeg">
+            Ваш браузер не поддерживает аудио.
+          </audio>
+        </div>
+
+        <div class="music-player">
+          <h3>Lena Raine — Creator</h3>
+          <audio controls>
+            <source src="https://dmistrewaq.github.io/Assets/Lena_Raine_-_Creator_77918548.mp3" type="audio/mpeg">
+            Ваш браузер не поддерживает аудио.
+          </audio>
+        </div>
+      </section>
+
+      <!-- КОНТАКТЫ -->
+      <section id="contacts" class="page-section">
+        <div class="hero" style="text-align:left;">
+          <h2>Контакты</h2>
+          <p>Хочешь заказать проект или просто поболтать про Minecraft и GD? Напиши нам!</p>
+          <p>Email: <b>dapolessya@ya.ru</b></p>
+          <p>Адрес: Москва, ул. Игровая, д. 1</p>
+        </div>
+      </section>
+    </div>
+
+    <footer>
+      <p>&copy; 2026 PixelCraft. Все права защищены.</p>
+      <p>Москва, ул. Игровая, д. 1</p>
+    </footer>
+
+    <script>
+      function showPage(pageId) {
+        const sections = document.querySelectorAll('.page-section');
+        sections.forEach(sec => sec.classList.remove('active'));
+        document.getElementById(pageId).classList.add('active');
+
+        const links = document.querySelectorAll('nav a');
+        links.forEach(link => link.classList.remove('active'));
+        document.getElementById('btn-' + pageId).classList.add('active');
+      }
+
+      // Загрузка своего файла
+      function loadLocalAudio(input) {
+        const file = input.files[0];
+        if (!file) return;
+
+        const audioElem = document.getElementById('localAudio');
+        const fileNameElem = document.getElementById('selectedFileName');
+
+        // Показываем имя файла
+        fileNameElem.textContent = 'Выбран файл: ' + file.name;
+
+        // Создаём ссылку на локальный файл
+        const fileURL = URL.createObjectURL(file);
+        audioElem.src = fileURL;
+        audioElem.style.display = 'block';
+        audioElem.load();
+      }
+
+      const btn = document.getElementById('orderBtn');
+      const msg = document.getElementById('resultMessage');
+
+      if (btn && msg) {
+        btn.addEventListener('click', function() {
+          const contact = prompt('Введите ваш номер телефона или email для заказа:');
+          if (contact === null) return;
+          const clean = contact.trim().toLowerCase();
+
+          if (clean === 'dapolessya@ya.ru') {
+            const password = prompt('Введите пароль для доступа:');
+            if (password === null) return;
+            if (password === '1423') {
+              msg.textContent = 'Здравствуйте, разработчик!';
+              msg.style.color = '#27ae60';
+            } else {
+              msg.textContent = 'Неверный пароль';
+              msg.style.color = '#e74c3c';
+            }
+          } else if (clean !== '') {
+            msg.textContent = 'Спасибо, мы скоро свяжемся!';
+            msg.style.color = '#2ecc71';
+          } else {
+            msg.textContent = 'Пожалуйста, введите данные.';
+            msg.style.color = '#e74c3c';
+          }
+          msg.style.display = 'block';
+        });
+      }
+    </script>
+  </body>
+</html>
