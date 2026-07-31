@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Секретная анимация</title>
+    <style>
+        body {
+            margin: 0;
+            height: 100vh;
+            background: linear-gradient(45deg, #ffeb3b, #ffc107);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Arial', sans-serif;
+            overflow: hidden;
+        }
+
+        .container {
+            width: 300px;
+            height: 300px;
+            position: relative;
+        }
+
+        .circle {
+            position: absolute;
+            border-radius: 50%;
+            animation: float 3s ease-in-out infinite alternate;
+        }
+
+        .circle-1 {
+            top: 0;
+            left: 0;
+            width: 100px;
+            height: 100px;
+            background: #ff5733;
+            animation-delay: 0s;
+        }
+
+        .circle-2 {
+            top: 50px;
+            right: 0;
+            width: 80px;
+            height: 80px;
+            background: #33ff57;
+            animation-delay: 0.5s;
+        }
+
+        .circle-3 {
+            bottom: 0;
+            left: 0;
+            width: 90px;
+            height: 90px;
+            background: #3357ff;
+            animation-delay: 1s;
+        }
+
+        .text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 24px;
+            color: #212121;
+            text-shadow: 0 0 10px rgba(0,0,0,0.3);
+            animation: shake 1s ease-in-out infinite alternate;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(-30px); }
+        }
+
+        @keyframes shake {
+            0% { transform: translateX(0); }
+            25% { transform: translateX(5px); }
+            50% { transform: translateX(-5px); }
+            75% { transform: translateX(3px); }
+            100% { transform: translateX(0); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="circle circle-1"></div>
+        <div class="circle circle-2"></div>
+        <div class="circle circle-3"></div>
+        <div class="text">Секрет раскрыт!</div>
+    </div>
+</body>
+</html>
