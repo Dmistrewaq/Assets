@@ -75,11 +75,20 @@
             margin: 0 4px;
         }
 
+        /* Исправленное выравнивание чекбокса и текста */
         .toggle-password-label {
-            margin-top: 6px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 8px;
             font-size: 13px;
             color: #555;
             cursor: pointer;
+            user-select: none;
+        }
+        .toggle-password-label input {
+            margin: 0;
+            width: auto;
         }
     </style>
 </head>
@@ -93,8 +102,11 @@
 
         <label for="password">Пароль:</label>
         <input type="password" id="password" required placeholder="Минимум 6 символов">
-        <label class="toggle-password-label" onclick="togglePassword()">
-            <input type="checkbox" id="showPasswordCheck"> Показать пароль
+
+        <!-- Чекбокс теперь ровно в одну строку с текстом -->
+        <label class="toggle-password-label">
+            <input type="checkbox" id="showPasswordCheck">
+            Показать пароль
         </label>
 
         <button type="submit" id="actionButton">Зарегистрироваться</button>
@@ -165,7 +177,6 @@
             return;
         }
 
-        // Блокируем кнопку, чтобы нельзя было нажать дважды
         isProcessing = true;
         actionButton.disabled = true;
         messageBox.textContent = '';
@@ -202,7 +213,7 @@
                 }
                 loginUser(email, password);
             }
-        }, 2000); // задержка 2 секунды
+        }, 2000);
     });
 
     function loginUser(email, password) {
