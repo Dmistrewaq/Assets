@@ -50,6 +50,10 @@
         button:hover {
             background: #0056b3;
         }
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
         #message {
             margin-top: 12px;
             text-align: center;
@@ -57,8 +61,7 @@
         }
         .success { color: green; }
         .error { color: red; }
-        
-        /* Стили для страницы аккаунта */
+
         #accountPage {
             display: none;
         }
@@ -72,7 +75,6 @@
             margin: 0 4px;
         }
 
-        /* Стиль для чекбокса */
         .toggle-password-label {
             margin-top: 6px;
             font-size: 13px;
@@ -83,7 +85,6 @@
 </head>
 <body>
 
-<!-- Страница регистрации/входа -->
 <div class="container" id="authPage">
     <h2 id="pageTitle">Регистрация</h2>
     <form id="authForm">
@@ -104,7 +105,6 @@
     </div>
 </div>
 
-<!-- Страница аккаунта -->
 <div class="container" id="accountPage">
     <h2>Личный кабинет</h2>
     <p>Вы вошли как: <span id="loggedEmail" style="font-weight:bold;"></span></p>
@@ -133,10 +133,12 @@
     const passwordInput = document.getElementById('password');
     const showPasswordCheck = document.getElementById('showPasswordCheck');
 
-    let isLoginMode = false; // false = регистрация, true = вход
+    let isLoginMode = false;
+    let isProcessing = false;
 
     toggleMode.addEventListener('click', function (e) {
         e.preventDefault();
+        if (isProcessing) return;
         isLoginMode = !isLoginMode;
         if (isLoginMode) {
             pageTitle.textContent = 'Вход';
@@ -147,57 +149,70 @@
             actionButton.textContent = 'Зарегистрироваться';
             toggleMode.textContent = 'Уже есть аккаунт? Войти';
         }
-        showMessage('');
+        messageBox.textContent = '';
     });
 
     authForm.addEventListener('submit', function (e) {
         e.preventDefault();
+        if (isProcessing) return;
+
         const email = document.getElementById('email').value.trim();
         const password = document.getElementById('password').value.trim();
 
         if (password.length < 6) {
-            showMessage('Пароль должен быть не короче 6 символов.', 'error');
+            messageBox.textContent = 'Пароль должен быть не короче 6 символов.';
+            messageBox.className = 'message error';
             return;
         }
 
-        const key = 'user_' + email;
-        const existing = localStorage.getItem(key);
+        // Блокируем кнопку, чтобы нельзя было нажать дважды
+        isProcessing = true;
+        actionButton.disabled = true;
+        messageBox.textContent = '';
 
-        if (!isLoginMode) { // Регистрация
-            if (existing) {
-                showMessage('Такой email уже зарегистрирован.', 'error');
-                return;
-            }
-            const userData = JSON.stringify({ email, password, number: 0 });
-            localStorage.setItem(key, userData);
-            showMessage('Аккаунт успешно создан!', 'success');
-            setTimeout(() => {
+        setTimeout(() => {
+            const key = 'user_' + email;
+            const existing = localStorage.getItem(key);
+
+            if (!isLoginMode) { // Регистрация
+                if (existing) {
+                    messageBox.textContent = 'Такой email уже зарегистрирован.';
+                    messageBox.className = 'message error';
+                    finishProcessing();
+                    return;
+                }
+                const userData = JSON.stringify({ email, password, number: 0 });
+                localStorage.setItem(key, userData);
+                messageBox.textContent = 'Аккаунт успешно создан!';
+                messageBox.className = 'message success';
+                setTimeout(() => loginUser(email, password), 500);
+            } else { // Вход
+                if (!existing) {
+                    messageBox.textContent = 'Такого аккаунта нет.';
+                    messageBox.className = 'message error';
+                    finishProcessing();
+                    return;
+                }
+                const userData = JSON.parse(existing);
+                if (userData.password !== password) {
+                    messageBox.textContent = 'Неверный пароль.';
+                    messageBox.className = 'message error';
+                    finishProcessing();
+                    return;
+                }
                 loginUser(email, password);
-            }, 1000);
-        } else { // Вход
-            if (!existing) {
-                showMessage('Такого аккаунта нет.', 'error');
-                return;
             }
-            const userData = JSON.parse(existing);
-            if (userData.password !== password) {
-                showMessage('Неверный пароль.', 'error');
-                return;
-            }
-            loginUser(email, password);
-        }
+        }, 2000); // задержка 2 секунды
     });
 
     function loginUser(email, password) {
         const key = 'user_' + email;
         const userData = JSON.parse(localStorage.getItem(key));
-
         loggedEmail.textContent = userData.email;
         currentNumberDisplay.textContent = 'Число: ' + userData.number;
-
         authPage.style.display = 'none';
         accountPage.style.display = 'block';
-        showMessage('');
+        finishProcessing();
     }
 
     function changeNumber(delta) {
@@ -238,10 +253,10 @@
     function logout() {
         authPage.style.display = 'block';
         accountPage.style.display = 'none';
-        showMessage('');
-        // Сбрасываем показ пароля при выходе
+        messageBox.textContent = '';
         passwordInput.type = 'password';
         showPasswordCheck.checked = false;
+        isProcessing = false;
     }
 
     function togglePassword() {
@@ -252,9 +267,9 @@
         }
     }
 
-    function showMessage(text, type = '') {
-        messageBox.textContent = text;
-        messageBox.className = 'message ' + (type ? type : '');
+    function finishProcessing() {
+        isProcessing = false;
+        actionButton.disabled = false;
     }
 </script>
 
