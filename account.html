@@ -75,6 +75,7 @@
             margin: 0 4px;
         }
 
+        /* Выравнивание чекбокса и текста */
         .toggle-password-label {
             display: flex;
             align-items: center;
@@ -168,6 +169,15 @@
 
     let isLoginMode = false;
     let isProcessing = false;
+
+    // --- Исправление: вешаем обработчик на чекбокс ---
+    showPasswordCheck.addEventListener('change', function() {
+        if (this.checked) {
+            passwordInput.type = 'text';
+        } else {
+            passwordInput.type = 'password';
+        }
+    });
 
     toggleMode.addEventListener('click', function (e) {
         e.preventDefault();
@@ -291,14 +301,6 @@
         isProcessing = false;
     }
 
-    function togglePassword() {
-        if (showPasswordCheck.checked) {
-            passwordInput.type = 'text';
-        } else {
-            passwordInput.type = 'password';
-        }
-    }
-
     function finishProcessing() {
         isProcessing = false;
         actionButton.disabled = false;
@@ -324,7 +326,6 @@
             return;
         }
 
-        // Переносим данные под новый ключ
         const newData = {
             email: newEmail,
             password: currentData.password,
@@ -334,7 +335,7 @@
         localStorage.removeItem(currentKey);
 
         alert('Email успешно изменён!');
-        location.reload(); // простой способ перерисовать страницу с новым email
+        location.reload();
     }
 
     function changePassword() {
