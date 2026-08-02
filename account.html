@@ -60,7 +60,7 @@
         
         /* Стили для страницы аккаунта */
         #accountPage {
-            display: none; /* скрыто по умолчанию */
+            display: none;
         }
         #currentNumber {
             font-weight: bold;
@@ -70,6 +70,14 @@
         }
         .controls button {
             margin: 0 4px;
+        }
+
+        /* Стиль для чекбокса */
+        .toggle-password-label {
+            margin-top: 6px;
+            font-size: 13px;
+            color: #555;
+            cursor: pointer;
         }
     </style>
 </head>
@@ -84,6 +92,9 @@
 
         <label for="password">Пароль:</label>
         <input type="password" id="password" required placeholder="Минимум 6 символов">
+        <label class="toggle-password-label" onclick="togglePassword()">
+            <input type="checkbox" id="showPasswordCheck"> Показать пароль
+        </label>
 
         <button type="submit" id="actionButton">Зарегистрироваться</button>
     </form>
@@ -119,6 +130,8 @@
     const messageBox = document.getElementById('message');
     const loggedEmail = document.getElementById('loggedEmail');
     const currentNumberDisplay = document.getElementById('currentNumber');
+    const passwordInput = document.getElementById('password');
+    const showPasswordCheck = document.getElementById('showPasswordCheck');
 
     let isLoginMode = false; // false = регистрация, true = вход
 
@@ -198,7 +211,7 @@
 
     async function setCustomNumber() {
         const newValStr = prompt('Введите новое число:');
-        if (newValStr === null) return; // отмена
+        if (newValStr === null) return;
         const newVal = Number(newValStr);
         if (Number.isNaN(newVal)) {
             alert('Это не число!');
@@ -213,11 +226,9 @@
     }
 
     function getCurrentUserKey() {
-        // Ищем любой активный аккаунт (простой способ для этой задачи)
         for (let i = 0; i < localStorage.length; i++) {
             const key = localStorage.key(i);
             if (key.startsWith('user_')) {
-                // Тут можно усложнить логику, если будет несколько одновременных сессий
                 return key;
             }
         }
@@ -228,6 +239,17 @@
         authPage.style.display = 'block';
         accountPage.style.display = 'none';
         showMessage('');
+        // Сбрасываем показ пароля при выходе
+        passwordInput.type = 'password';
+        showPasswordCheck.checked = false;
+    }
+
+    function togglePassword() {
+        if (showPasswordCheck.checked) {
+            passwordInput.type = 'text';
+        } else {
+            passwordInput.type = 'password';
+        }
     }
 
     function showMessage(text, type = '') {
