@@ -40,7 +40,7 @@
         button {
             width: 100%;
             padding: 10px;
-            margin-top: 16px;
+            margin-top: 10px;
             background: #007bff;
             color: white;
             border: none;
@@ -75,7 +75,6 @@
             margin: 0 4px;
         }
 
-        /* Исправленное выравнивание чекбокса и текста */
         .toggle-password-label {
             display: flex;
             align-items: center;
@@ -90,6 +89,25 @@
             margin: 0;
             width: auto;
         }
+
+        .settings-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-top: 16px;
+        }
+        .btn-secondary {
+            background: #6c757d;
+        }
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+        .btn-danger {
+            background: #dc3545;
+        }
+        .btn-danger:hover {
+            background: #c82333;
+        }
     </style>
 </head>
 <body>
@@ -103,7 +121,6 @@
         <label for="password">Пароль:</label>
         <input type="password" id="password" required placeholder="Минимум 6 символов">
 
-        <!-- Чекбокс теперь ровно в одну строку с текстом -->
         <label class="toggle-password-label">
             <input type="checkbox" id="showPasswordCheck">
             Показать пароль
@@ -129,7 +146,11 @@
         <button onclick="setCustomNumber()" style="background:#28a745">Задать своё число</button>
     </div>
 
-    <button onclick="logout()" style="margin-top:16px; background:#dc3545">Выйти</button>
+    <div class="settings-buttons">
+        <button onclick="changeEmail()" class="btn-secondary">Сменить email</button>
+        <button onclick="changePassword()" class="btn-secondary">Сменить пароль</button>
+        <button onclick="logout()" class="btn-danger">Выйти</button>
+    </div>
 </div>
 
 <script>
@@ -281,6 +302,55 @@
     function finishProcessing() {
         isProcessing = false;
         actionButton.disabled = false;
+    }
+
+    // --- Новые функции: смена email и пароля ---
+
+    function changeEmail() {
+        const currentKey = getCurrentUserKey();
+        if (!currentKey) return;
+
+        const currentData = JSON.parse(localStorage.getItem(currentKey));
+        const newEmail = prompt('Введите новый email:', currentData.email);
+        if (!newEmail || newEmail.trim() === '') return;
+        if (newEmail === currentData.email) {
+            alert('Новый email совпадает с текущим.');
+            return;
+        }
+
+        const newKey = 'user_' + newEmail;
+        if (localStorage.getItem(newKey)) {
+            alert('Такой email уже занят.');
+            return;
+        }
+
+        // Переносим данные под новый ключ
+        const newData = {
+            email: newEmail,
+            password: currentData.password,
+            number: currentData.number
+        };
+        localStorage.setItem(newKey, JSON.stringify(newData));
+        localStorage.removeItem(currentKey);
+
+        alert('Email успешно изменён!');
+        location.reload(); // простой способ перерисовать страницу с новым email
+    }
+
+    function changePassword() {
+        const currentKey = getCurrentUserKey();
+        if (!currentKey) return;
+
+        const currentData = JSON.parse(localStorage.getItem(currentKey));
+        const newPassword = prompt('Введите новый пароль (минимум 6 символов):');
+        if (!newPassword || newPassword.length < 6) {
+            alert('Пароль должен быть не короче 6 символов.');
+            return;
+        }
+
+        currentData.password = newPassword;
+        localStorage.setItem(currentKey, JSON.stringify(currentData));
+        alert('Пароль успешно изменён!');
     }
 </script>
 
