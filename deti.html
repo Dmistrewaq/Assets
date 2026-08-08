@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Android 16 UI — Детский лаунчер</title>
+  <style>
+    :root {
+      --android-bg: #f5f5f5;
+      --status-bg: #ffffff;
+      --accent: #2196F3;
+      --text-main: #000000;
+      --text-secondary: #757575;
+      --shadow: 0 4px 12px rgba(0,0,0,0.12);
+      --danger: #F44336;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background-color: var(--android-bg);
+      color: var(--text-main);
+      font-family: Roboto, Arial, sans-serif;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .status-bar {
+      height: 28px;
+      background: var(--status-bg);
+      border-bottom: 1px solid #e0e0e0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 12px;
+      font-size: 12px;
+      color: var(--text-secondary);
+      z-index: 10;
+    }
+    .status-icons { display: flex; gap: 8px; }
+    .clock { font-weight: bold; }
+
+    .app-grid {
+      flex: 1;
+      padding: 16px;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+      gap: 14px;
+      overflow-y: auto;
+    }
+
+    .app-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      position: relative;
+    }
+
+    .icon-box {
+      width: 64px;
+      height: 64px;
+      background: #e0e0e0;
+      border-radius: 18px;
+      margin-bottom: 8px;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #555;
+      font-weight: bold;
+      box-shadow: var(--shadow);
+    }
+
+    .app-name {
+      font-size: 13px;
+      line-height: 1.2;
+      max-width: 90px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .action-btn {
+      margin-top: 10px;
+      padding: 6px 12px;
+      border: none;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-open {
+      background: var(--accent);
+      color: white;
+    }
+    .btn-open:hover { background: #1976D2; }
+
+    #play-screen {
+      position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: white; z-index: 2000; display: none; flex-direction: column; overflow: hidden;
+    }
+    .play-header {
+      padding: 12px 16px; background: #fff; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center;
+    }
+    .play-title { font-weight: bold; font-size: 16px; color: #333; }
+    .close-play { background: none; border: none; font-size: 20px; cursor: pointer; color: #555; }
+    .play-content {
+      flex: 1; overflow-y: auto; padding: 16px; display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 16px;
+    }
+    .play-app-card {
+      display: flex; flex-direction: column; align-items: center; text-align: center;
+    }
+    .play-icon { width: 60px; height: 60px; background: #eee; border-radius: 12px; margin-bottom: 8px; display: flex; align-items: center; justify-content: center; color: #888; font-size: 32px; }
+    .play-name { font-size: 13px; color: #333; }
+    .install-btn {
+      margin-top: 8px; padding: 6px 12px; border: none; border-radius: 6px; font-size: 12px; font-weight: 500; background: var(--accent); color: white; cursor: pointer;
+    }
+
+    .delete-overlay {
+      position: absolute; top: -40px; left: 0; width: 100%; height: 40px; display: none; justify-content: center; align-items: center; background: rgba(255,255,255,0.9); border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    }
+    .delete-text { color: var(--danger); font-weight: bold; }
+
+    #no-internet-screen {
+      position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: white; z-index: 2100; display: none; flex-direction: column; align-items: center; justify-content: center; padding: 20px; text-align: center;
+    }
+    #no-internet-icon { font-size: 48px; margin-bottom: 16px; }
+    #no-internet-title { font-size: 20px; font-weight: bold; margin-bottom: 8px; color: var(--text-main); }
+    #no-internet-desc { color: var(--text-secondary); line-height: 1.4; margin-bottom: 24px; }
+    .back-btn { background: #e0e0e0; color: #333; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: bold; }
+    .back-btn:hover { background: #d0d0d0; }
+
+    /* Рисовалка */
+    #draw-screen { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: white; z-index: 2500; display: none; flex-direction: column; overflow: hidden; }
+    .draw-header { padding: 12px 16px; background: #f0f0f0; border-bottom: 1px solid #ccc; display: flex; justify-content: space-between; align-items: center; }
+    .draw-title { font-weight: bold; font-size: 16px; }
+    .close-draw { background: none; border: none; font-size: 20px; cursor: pointer; color: #555; }
+    .canvas-area { flex: 1; overflow: auto; padding: 16px; display: flex; justify-content: center; align-items: center; }
+    .grid-canvas { display: grid; grid-template-columns: repeat(16, 1fr); grid-template-rows: repeat(16, 1fr); width: 100%; max-width: 400px; height: 400px; border: 4px solid #333; }
+    .cell { border: 1px solid #ccc; background: white; cursor: pointer; }
+    .cell.black { background: black; }
+    .draw-controls { padding: 12px 16px; background: #f0f0f0; border-top: 1px solid #ccc; display: flex; gap: 12px; }
+    .control-btn { flex: 1; padding: 8px; border: none; border-radius: 6px; font-size: 12px; cursor: pointer; background: white; color: #333; }
+    .control-btn.primary { background: var(--accent); color: white; }
+
+    /* Мультики */
+    #cartoons-screen { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: white; z-index: 2600; display: none; flex-direction: column; overflow: hidden; }
+    .cartoons-header { padding: 12px 16px; background: #FFCA3A; border-bottom: 1px solid #ffbf00; display: flex; justify-content: space-between; align-items: center; }
+    .cartoons-title { font-weight: bold; font-size: 16px; color: #2c5aa0; }
+    .close-cartoons { background: none; border: none; font-size: 20px; cursor: pointer; color: #2c5aa0; }
+    .cartoons-content { flex: 1; overflow-y: auto; padding: 16px; display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 12px; }
+    .cartoon-card { display: flex; flex-direction: column; align-items: center; text-align: center; }
+    .cartoon-img { width: 100%; height: 80px; object-fit: cover; border-radius: 8px; background: #ddd; }
+    .cartoon-title { font-size: 13px; margin-top: 6px; color: var(--text-main); }
+    .cartoon-btn { margin-top: 8px; background: #FFCA3A; color: #2c5aa0; border: none; padding: 6px 10px; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: bold; }
+    .cartoon-btn:hover { background: #ffe066; }
+
+    /* Музыка */
+    #music-screen { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: #2b2b2b; z-index: 2700; display: none; flex-direction: column; }
+    .music-header { padding: 12px 16px; background: #1a1a1a; color: white; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #444; }
+    .music-title { font-weight: bold; font-size: 16px; }
+    .close-music { background: none; border: none; color: white; font-size: 20px; cursor: pointer; }
+    .webamp-container { flex: 1; display: flex; flex-direction: column; padding: 20px; overflow: auto; }
+    .player-box { background: #3a3a3a; border-radius: 12px; padding: 20px; text-align: center; box-shadow: inset 0 0 15px rgba(0,0,0,0.5); }
+    .track-title { color: #ccc; margin-bottom: 12px; font-size: 14px; word-break: break-all; }
+    audio { width: 100%; margin-top: 8px; }
+    .upload-area {
+      margin-top: 16px;
+      padding: 16px;
+      background: #4a4a4a;
+      border-radius: 8px;
+      border: 2px dashed #666;
+      color: #aaa;
+      text-align: center;
+      cursor: pointer;
+    }
+    .upload-area:hover { border-color: #888; color: #fff; }
+    .hidden-file-input { display: none; }
+
+    /* Подтверждение просмотра */
+    #confirm-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); display: none; justify-content: center; align-items: center; z-index: 3000; }
+    .modal { background: white; padding: 20px; border-radius: 12px; text-align: center; max-width: 320px; }
+    .btn { background: var(--accent); color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; }
+    .btn:hover { background: #1976D2; }
+    .btn-cancel { background: #e0e0e0; color: #333; }
+    .btn-cancel:hover { background: #d0d0d0; }
+  </style>
+</head>
+<body>
+
+<div class="status-bar">
+  <div class="status-icons">📶 Wi‑Fi  ·  🔋 87%  ·  📱</div>
+  <div class="clock">14:23</div>
+</div>
+
+<div class="app-grid" id="desktop-grid">
+  <!-- Приложения будут добавлены через JS -->
+</div>
+
+<!-- Кнопка Google Play в углу -->
+<button id="btn-gp" style="position:fixed; bottom:20px; right:20px; width:64px; height:64px; border:none; border-radius:50%; background:#ff8800; color:white; box-shadow:0 4px 12px rgba(0,0,0,0.3); cursor:pointer; display:flex; align-items:center; justify-content:center; font-weight:bold; font-size:14px;">
+  GP
+</button>
+
+<!-- Экран Google Play -->
+<div id="play-screen">
+  <div class="play-header">
+    <span class="play-title">Google Play — Магазин приложений</span>
+    <button class="close-play" onclick="launcher.closePlayStore()">✕</button>
+  </div>
+  <div class="play-content" id="play-list">
+    <!-- Приложения для установки будут добавлены через JS -->
+  </div>
+</div>
+
+<!-- Экран «Нет интернета» -->
+<div id="no-internet-screen">
+  <div id="no-internet-icon">🚫</div>
+  <div id="no-internet-title">Нет интернета</div>
+  <div id="no-internet-desc">Не удалось соединиться с сервером. Проверьте подключение к сети или попробуйте позже.</div>
+  <button class="back-btn" onclick="launcher.closeNoInternet()">Вернуться назад</button>
+</div>
+
+<!-- Рисовалка -->
+<div id="draw-screen">
+  <div class="draw-header">
+    <span class="draw-title">Рисовалка (16×16)</span>
+    <button class="close-draw" onclick="launcher.closeDraw()">✕</button>
+  </div>
+  <div class="canvas-area">
+    <div class="grid-canvas" id="grid-canvas"></div>
+  </div>
+  <div class="draw-controls">
+    <button class="control-btn" onclick="launcher.clearCanvas()">Стереть всё</button>
+      <button class="control-btn primary" onclick="launcher.saveDrawing()">Сохранить</button>
+      <button class="control-btn" onclick="launcher.loadDrawing()">Загрузить</button>
+    </div>
+  </div>
+</div>
+
+<!-- Мультики -->
+<div id="cartoons-screen">
+  <div class="cartoons-header">
+    <span class="cartoons-title">Мультики</span>
+    <button class="close-cartoons" onclick="launcher.closeCartoons()">✕</button>
+  </div>
+  <div class="cartoons-content" id="cartoons-list">
+    <!-- Карточки мультиков будут добавлены через JS -->
+  </div>
+</div>
+
+<!-- Музыка -->
+<div id="music-screen">
+  <div class="music-header">
+    <span class="music-title">Музыка</span>
+    <button class="close-music" onclick="launcher.closeMusic()">✕</button>
+  </div>
+  <div class="webamp-container">
+    <div class="player-box">
+      <div class="track-title" id="track-name">Выберите трек</div>
+      <audio id="gd-audio" controls style="width: 100%; margin-top: 8px;"></audio>
+      
+      <div class="upload-area" onclick="document.getElementById('file-input').click()">
+        <span>📁 Нажмите, чтобы загрузить свой MP3</span>
+        <input type="file" id="file-input" class="hidden-file-input" accept=".mp3,.wav">
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Подтверждение просмотра -->
+<div id="confirm-overlay">
+  <div class="modal">
+    <p id="confirm-text">Ты точно хочешь посмотреть этот мультик?</p>
+    <br>
+    <button id="confirm-yes" class="btn">Да, смотреть</button>
+    <button id="confirm-no" class="btn btn-cancel">Нет, позже</button>
+  </div>
+</div>
+
+<script>
+  const launcher = {
+    appsConfig: [
+      { id: 'alice', name: 'Алиса AI', icon: '🤖' },
+      { id: 'draw', name: 'Рисовалка', icon: '🎨' },
+      { id: 'cartoons', name: 'Мультики', icon: '🎬' },
+      { id: 'music', name: 'Музыка', icon: '🎵' }
+    ],
+
+    isAppInstalled(appId) {
+      const val = localStorage.getItem('installed_' + appId);
+      return val === 'true';
+    },
+
+    setInstalled(appId, installed) {
+      localStorage.setItem('installed_' + appId, installed ? 'true' : 'false');
+    },
+
+    renderDesktop() {
+      const grid = document.getElementById('desktop-grid');
+      if (!grid) return;
+      grid.innerHTML = '';
+
+      this.appsConfig.forEach(app => {
+        if (this.isAppInstalled(app.id)) {
+          const card = document.createElement('div');
+          card.className = 'app-card';
+          card.id = app.id;
+
+          const deleteOverlay = document.createElement('div');
+          deleteOverlay.className = 'delete-overlay';
+          deleteOverlay.innerHTML = '<span class="delete-text">Удалить приложение?</span>';
+
+          const iconBox = document.createElement('div');
+          iconBox.className = 'icon-box';
+          iconBox.textContent = app.icon;
+
+          const name = document.createElement('div');
+          name.className = 'app-name';
+          name.textContent = app.name;
+
+          const btn = document.createElement('button');
+          btn.className = 'action-btn btn-open';
+          btn.textContent = 'Открыть';
+
+          // Логика открытия
+          if (app.name === 'Алиса AI') {
+            btn.onclick = () => this.openApp(app.name);
+          } else if (app.name === 'Рисовалка') {
+            btn.onclick = () => this.initDrawScreen();
+          } else if (app.name === 'Мультики') {
+            btn.onclick = () => this.initCartoonsScreen();
+          } else if (app.name === 'Музыка') {
+            btn.onclick = () => this.initMusicScreen();
+          }
+
+          let holdTimeout;
+          card.addEventListener('mousedown', () => {
+            holdTimeout = setTimeout(() => {
+              deleteOverlay.style.display = 'flex';
+            }, 800);
+          });
+          card.addEventListener('mouseup', () => {
+            clearTimeout(holdTimeout);
+            if (deleteOverlay.style.display === 'flex') {
+              this.removeApp(card);
+              deleteOverlay.style.display = 'none';
+            } else {
+              deleteOverlay.style.display = 'none';
+            }
+          });
+          card.addEventListener('mouseleave', () => {
+            clearTimeout(holdTimeout);
+            deleteOverlay.style.display = 'none';
+          });
+
+          card.appendChild(deleteOverlay);
+          card.appendChild(iconBox);
+          card.appendChild(name);
+          card.appendChild(btn);
+          grid.appendChild(card);
+        }
+      });
+    },
+
+    removeApp(card) {
+      // Если удаляем «Музыка» — сначала останавливаем трек
+      if (card.id === 'music') {
+        this.closeMusic();
+      }
+
+      card.style.opacity = '0';
+      card.style.transform = 'scale(0.9)';
+      setTimeout(() => {
+        this.setInstalled(card.id, false);
+        card.remove();
+        this.renderDesktop();
+        alert('Приложение удалено!');
+      }, 300);
+    },
+
+    // --- Алиса AI (имитация) ---
+    openApp(appName) {
+      const screen = document.getElementById('no-internet-screen');
+      if (screen) screen.style.display = 'flex';
+    },
+    closeNoInternet() {
+      const screen = document.getElementById('no-internet-screen');
+      if (screen) screen.style.display = 'none';
+    },
+
+    // --- Рисовалка ---
+    isDrawScreenInitialized: false,
+    initDrawScreen() {
+      if (!this.isDrawScreenInitialized) {
+        const canvas = document.getElementById('grid-canvas');
+        if (!canvas) return;
+        canvas.innerHTML = '';
+        for (let r = 0; r < 16; r++) {
+          for (let c = 0; c < 16; c++) {
+            const cell = document.createElement('div');
+            cell.className = 'cell';
+            cell.dataset.row = r;
+            cell.dataset.col = c;
+            cell.onclick = (e) => this.toggleCell(e);
+            canvas.appendChild(cell);
+          }
+        }
+        this.loadDrawing();
+        this.isDrawScreenInitialized = true;
+      }
+      const screen = document.getElementById('draw-screen');
+      if (screen) screen.style.display = 'flex';
+    },
+    closeDraw() {
+      const screen = document.getElementById('draw-screen');
+      if (screen) screen.style.display = 'none';
+    },
+    toggleCell(e) {
+      const cell = e.target;
+      cell.classList.toggle('black');
+    },
+    clearCanvas() {
+      const cells = document.querySelectorAll('.cell');
+      cells.forEach(cell => cell.classList.remove('black'));
+    },
+    saveDrawing() {
+      const cells = document.querySelectorAll('.cell');
+      const data = [];
+      cells.forEach(cell => data.push(cell.classList.contains('black') ? 1 : 0));
+      localStorage.setItem('draw_16x16', JSON.stringify(data));
+      alert('Рисунок сохранён в localStorage!');
+    },
+    loadDrawing() {
+      const saved = localStorage.getItem('draw_16x16');
+      if (!saved) return;
+      const data = JSON.parse(saved);
+      const cells = document.querySelectorAll('.cell');
+      cells.forEach((cell, index) => {
+        if (data[index] === 1) cell.classList.add('black');
+        else cell.classList.remove('black');
+      });
+    },
+
+    // --- Мультики ---
+    isCartoonsScreenInitialized: false,
+    cartoonsData: [
+      { title: 'Мимимишки', img: 'https://ivi.ru/images/covers/mi-mi-mishki.jpg', url: 'https://www.ivi.ru/watch/mi-mi-mishki' },
+      { title: 'Маша и Медведь', img: 'https://ivi.ru/images/covers/masha_i_medved.jpg', url: 'https://www.ivi.ru/watch/masha_i_medved' },
+      { title: 'Барбоскины', img: 'https://ivi.ru/images/covers/barboskiny.jpg', url: 'https://www.ivi.ru/watch/barboskiny' },
+      { title: 'Лунтик', img: 'https://ivi.ru/images/covers/luntik.jpg', url: 'https://www.ivi.ru/watch/luntik' },
+      { title: 'Смешарики', img: 'https://ivi.ru/images/covers/smeshariki.jpg', url: 'https://www.ivi.ru/watch/smeshariki' },
+      { title: 'Фиксики', img: 'https://ivi.ru/images/covers/fixiki.jpg', url: 'https://www.ivi.ru/watch/fiksiki' }
+    ],
+    initCartoonsScreen() {
+      if (!this.isCartoonsScreenInitialized) {
+        const container = document.getElementById('cartoons-list');
+        if (!container) return;
+        container.innerHTML = '';
+        this.cartoonsData.forEach(item => {
+          const card = document.createElement('div');
+          card.className = 'cartoon-card';
+          const img = document.createElement('img');
+          img.src = item.img;
+          img.alt = item.title;
+          img.className = 'cartoon-img';
+          const title = document.createElement('div');
+          title.textContent = item.title;
+          title.className = 'cartoon-title';
+          const btn = document.createElement('button');
+          btn.textContent = 'Смотреть';
+          btn.className = 'cartoon-btn';
+          btn.onclick = () => this.askConfirm(item.title, item.url);
+          card.appendChild(img);
+          card.appendChild(title);
+          card.appendChild(btn);
+          container.appendChild(card);
+        });
+        this.isCartoonsScreenInitialized = true;
+      }
+      const screen = document.getElementById('cartoons-screen');
+      if (screen) screen.style.display = 'flex';
+    },
+    closeCartoons() {
+      const screen = document.getElementById('cartoons-screen');
+      if (screen) screen.style.display = 'none';
+    },
+
+    // --- Музыка ---
+    initMusicScreen() {
+      const screen = document.getElementById('music-screen');
+      if (screen) {
+        screen.style.display = 'flex';
+        // Не сбрасываем аудио каждый раз — трек продолжает играть фоном
+      }
+    },
+    closeMusic() {
+      const screen = document.getElementById('music-screen');
+      const audio = document.getElementById('gd-audio');
+      if (audio) audio.pause();
+      if (screen) screen.style.display = 'none';
+    },
+
+    handleFileSelect(event) {
+      const file = event.target.files[0];
+      if (!file || !file.type.startsWith('audio/')) return;
+
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const audio = document.getElementById('gd-audio');
+        const trackName = document.getElementById('track-name');
+        audio.src = e.target.result;
+        trackName.textContent = file.name;
+        audio.play().catch(err => console.log('Автовоспроизведение заблокировано браузером'));
+      };
+      reader.readAsDataURL(file);
+    },
+
+    // --- Подтверждение просмотра ---
+    currentUrl: '',
+    askConfirm(title, url) {
+      const textEl = document.getElementById('confirm-text');
+      if (textEl) textEl.textContent = 'Ты точно хочешь посмотреть «' + title + '»?';
+      this.currentUrl = url;
+      const overlay = document.getElementById('confirm-overlay');
+      if (overlay) overlay.style.display = 'flex';
+    },
+    closeConfirm() {
+      const overlay = document.getElementById('confirm-overlay');
+      if (overlay) overlay.style.display = 'none';
+    },
+
+    // --- Google Play (имитация установки) ---
+    renderPlayStore() {
+      const container = document.getElementById('play-list');
+      if (!container) return;
+      container.innerHTML = '';
+      this.appsConfig.forEach(app => {
+        const card = document.createElement('div');
+        card.className = 'play-app-card';
+        const icon = document.createElement('div');
+        icon.className = 'play-icon';
+        icon.textContent = app.icon;
+        const name = document.createElement('div');
+        name.className = 'play-name';
+        name.textContent = app.name;
+        const btn = document.createElement('button');
+        btn.className = 'install-btn';
+        const isInstalled = this.isAppInstalled(app.id);
+        if (isInstalled) {
+          btn.textContent = 'Удалить';
+          btn.style.background = '#ffebee';
+          btn.style.color = '#c62828';
+          btn.onclick = () => this.uninstallFromPlay(app.id, app.name);
+        } else {
+          btn.textContent = 'Установить';
+          btn.onclick = () => this.installFromPlay(app.id, app.name);
+        }
+        card.appendChild(icon);
+        card.appendChild(name);
+        card.appendChild(btn);
+        container.appendChild(card);
+      });
+    },
+    openPlayStore() {
+      const playScreen = document.getElementById('play-screen');
+      if (playScreen) {
+        this.renderPlayStore();
+        playScreen.style.display = 'flex';
+      }
+    },
+    closePlayStore() {
+      const playScreen = document.getElementById('play-screen');
+      if (playScreen) playScreen.style.display = 'none';
+    },
+    uninstallFromPlay(appId, appName) {
+      this.setInstalled(appId, false);
+      this.renderPlayStore();
+      this.renderDesktop();
+      this.closePlayStore();
+      alert('«' + appName + '» удалён из Google Play и с рабочего стола.');
+    },
+    installFromPlay(appId, appName) {
+      const card = Array.from(document.querySelectorAll('.play-app-card')).find(c =>
+        c.querySelector('.play-name').textContent === appName
+      );
+      if (!card) return;
+      const btn = card.querySelector('.install-btn');
+      btn.style.display = 'none';
+      const progressContainer = document.createElement('div');
+      progressContainer.className = 'progress-container';
+      const fill = document.createElement('div');
+      fill.className = 'progress-fill';
+      const text = document.createElement('div');
+      text.className = 'percent-text';
+      text.textContent = '0%';
+      progressContainer.appendChild(fill);
+      progressContainer.appendChild(text);
+      card.appendChild(progressContainer);
+      let percent = 0;
+      const interval = setInterval(() => {
+        percent += Math.floor(Math.random() * 15) + 5;
+        if (percent > 100) percent = 100;
+        fill.style.width = percent + '%';
+        text.textContent = percent + '%';
+        if (percent >= 100) {
+          clearInterval(interval);
+          progressContainer.style.display = 'none';
+          this.setInstalled(appId, true);
+          this.renderDesktop();
+          this.closePlayStore();
+          alert('«' + appName + '» установлен! Теперь он есть на рабочем столе.');
+        }
+      }, 150);
+    }
+  };
+
+  window.addEventListener('DOMContentLoaded', () => {
+    launcher.renderDesktop();
+    const gpBtn = document.getElementById('btn-gp');
+    if (gpBtn) gpBtn.onclick = () => launcher.openPlayStore();
+
+    const fileInput = document.getElementById('file-input');
+    if (fileInput) fileInput.onchange = (e) => launcher.handleFileSelect(e);
+
+    document.getElementById('confirm-yes').onclick = () => {
+      window.open(launcher.currentUrl, '_blank');
+      launcher.closeConfirm();
+    };
+    document.getElementById('confirm-no').onclick = () => {
+      launcher.closeConfirm();
+    };
+  });
+</script>
+</body>
+</html>
