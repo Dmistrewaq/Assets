@@ -2,8 +2,7 @@
 <html lang="ru">
   <head>
     <meta charset="UTF-8">
-    <title>Видео из двух источников</title>
-    <!-- Фавикон: иконка вкладки браузера -->
+    <title>Видео: YouTube + Rutube + свой плеер</title>
     <link rel="icon" type="image/png" href="https://dmistrewaq.github.io/Assets/warning.png">
     <style>
       body {
@@ -11,29 +10,29 @@
         margin: 0;
         padding: 20px;
         background: #f5f5f5;
-      }
-      .page-wrapper {
-        max-width: 1000px;
-        margin: 0 auto;
-      }
-      h1 {
-        text-align: center;
         color: #333;
       }
-      /* Контейнер для каждого видео */
+      .page-wrapper {
+        max-width: 800px;
+        margin: 0 auto;
+      }
+
+      h1 { text-align: center; color: #222; }
+      h2 { margin-top: 30px; border-bottom: 1px solid #ccc; padding-bottom: 8px; }
+
+      /* Карточка для iframe (YouTube/Rutube) */
       .video-card {
         background: white;
         border-radius: 8px;
         box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         padding: 15px;
-        margin-bottom: 30px;
+        margin-bottom: 25px;
       }
       .video-title {
         margin: 0 0 10px 0;
         font-size: 1.1em;
         color: #222;
       }
-      /* Адаптивный iframe 16:9 */
       .embed-responsive {
         position: relative;
         padding-bottom: 56.25%; /* 16:9 */
@@ -43,28 +42,110 @@
       }
       .embed-responsive iframe {
         position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
+        top: 0; left: 0; width: 100%; height: 100%;
         border: none;
       }
-      .link-row {
-        margin-top: 12px;
+      .link-row { margin-top: 12px; }
+      .link-row a { color: #007bff; text-decoration: none; font-size: 0.95em; }
+      .link-row a:hover { text-decoration: underline; }
+
+      /* --- Твой кастомный плеер (MP4) --- */
+      .custom-player-wrapper {
+        background: white;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        margin-top: 40px;
+        overflow: hidden;
       }
-      .link-row a {
-        color: #007bff;
-        text-decoration: none;
-        font-size: 0.95em;
+      .player-video-area {
+        position: relative;
+        width: 100%;
+        padding-bottom: 56.25%; /* 16:9 */
+        height: 0;
       }
-      .link-row a:hover {
-        text-decoration: underline;
+      video {
+        position: absolute;
+        top: 0; left: 0; width: 100%; height: 100%;
+        object-fit: cover;
+      }
+      .player-controls {
+        background: #fff;
+        padding: 10px 12px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+        border-top: 1px solid #eee;
+      }
+      .btn {
+        background: #fff;
+        border: 1px solid #bbb;
+        color: #333;
+        padding: 6px 12px;
+        cursor: pointer;
+        border-radius: 4px;
+        font-size: 13px;
+      }
+      .btn:hover { border-color: #555; background: #fafafa; }
+      .btn.primary {
+        background: #007bff;
+        border-color: #007bff;
+        color: #fff;
+      }
+      .btn.primary:hover { background: #0056b3; border-color: #0056b3; }
+
+      .progress-container {
+        flex: 1;
+        min-width: 200px;
+        position: relative;
+        height: 6px;
+        background: #e0e0e0;
+        border-radius: 3px;
+        cursor: pointer;
+      }
+      .progress-fill {
+        height: 100%;
+        background: #007bff;
+        width: 0%;
+        border-radius: 3px;
+      }
+      .time-display {
+        width: 60px;
+        text-align: center;
+        font-size: 13px;
+        color: #555;
+      }
+      .volume-block { display: flex; align-items: center; gap: 6px; }
+      input[type="range"] {
+        width: 80px;
+        -webkit-appearance: none;
+        appearance: none;
+        background: #e0e0e0;
+        height: 4px;
+        border-radius: 2px;
+        outline: none;
+      }
+      input[type="range"]::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 14px;
+        height: 14px;
+        background: #555;
+        border-radius: 50%;
+      }
+      select {
+        padding: 4px 8px;
+        background: #fff;
+        border: 1px solid #bbb;
+        border-radius: 4px;
+        font-size: 13px;
       }
     </style>
   </head>
   <body>
     <div class="page-wrapper">
-      <h1>Видео из двух источников</h1>
+      <h1>Видео из разных источников</h1>
 
       <!-- YouTube -->
       <div class="video-card">
@@ -97,6 +178,103 @@
           <a href="https://rutube.ru/video/6920781bf90e3344df9d051bec4d4752/" target="_blank">Смотреть на Rutube</a>
         </div>
       </div>
+
+      <!-- Твой кастомный плеер с MP4 -->
+      <h2>Твой видеофайл (кастомный плеер)</h2>
+      <div class="custom-player-wrapper">
+        <div class="player-video-area">
+          <!-- Ссылка на твой MP4 -->
+          <video id="customVideo" playsinline>
+            <source src="https://static.tildacdn.com/vide6339-6161-4264-b534-656239376131/VID_20260718_121152.mp4" type="video/mp4">
+            Ваш браузер не поддерживает видео.
+          </video>
+        </div>
+        <div class="player-controls">
+          <button id="playPauseBtn" class="btn primary">▶ Play</button>
+
+          <div class="progress-container" id="progressBar">
+            <div class="progress-fill" id="progressFill"></div>
+          </div>
+
+          <div class="time-display" id="timeDisplay">0:00 / 0:00</div>
+
+          <div class="volume-block">
+            🔊
+            <input type="range" id="volumeSlider" min="0" max="1" step="0.01" value="1">
+          </div>
+
+          <select id="speedSelect">
+            <option value="0.5">0.5x</option>
+            <option value="1" selected>1x</option>
+            <option value="1.5">1.5x</option>
+            <option value="2">2x</option>
+          </select>
+
+          <button id="rewindBtn" class="btn">⏪ −10 с</button>
+          <button id="forwardBtn" class="btn">+10 с ⏩</button>
+        </div>
+      </div>
     </div>
+
+    <script>
+      const video = document.getElementById('customVideo');
+      const playPauseBtn = document.getElementById('playPauseBtn');
+      const progressBar = document.getElementById('progressBar');
+      const progressFill = document.getElementById('progressFill');
+      const timeDisplay = document.getElementById('timeDisplay');
+      const volumeSlider = document.getElementById('volumeSlider');
+      const speedSelect = document.getElementById('speedSelect');
+      const rewindBtn = document.getElementById('rewindBtn');
+      const forwardBtn = document.getElementById('forwardBtn');
+
+      // Play / Pause
+      playPauseBtn.addEventListener('click', () => {
+        if (video.paused) {
+          video.play();
+          playPauseBtn.textContent = '⏸ Pause';
+        } else {
+          video.pause();
+          playPauseBtn.textContent = '▶ Play';
+        }
+      });
+
+      // Прогресс-бар и время
+      video.addEventListener('timeupdate', () => {
+        const percent = (video.currentTime / video.duration) * 100;
+        progressFill.style.width = percent + '%';
+
+        const m = Math.floor(video.currentTime / 60);
+        const s = Math.floor(video.currentTime % 60);
+        const totalM = Math.floor(video.duration / 60) || 0;
+        const totalS = Math.floor(video.duration % 60) || 0;
+        timeDisplay.textContent = `${m}:${String(s).padStart(2, '0')} / ${totalM}:${String(totalS).padStart(2, '0')}`;
+      });
+
+      // Клик по прогресс-бару
+      progressBar.addEventListener('click', (e) => {
+        const rect = progressBar.getBoundingClientRect();
+        const posX = e.clientX - rect.left;
+        const percent = posX / rect.width;
+        video.currentTime = percent * video.duration;
+      });
+
+      // Громкость
+      volumeSlider.addEventListener('input', (e) => {
+        video.volume = e.target.value;
+      });
+
+      // Скорость
+      speedSelect.addEventListener('change', (e) => {
+        video.playbackRate = parseFloat(e.target.value);
+      });
+
+      // Перемотка
+      rewindBtn.addEventListener('click', () => {
+        video.currentTime = Math.max(0, video.currentTime - 10);
+      });
+      forwardBtn.addEventListener('click', () => {
+        video.currentTime = Math.min(video.duration, video.currentTime + 10);
+      });
+    </script>
   </body>
 </html>
